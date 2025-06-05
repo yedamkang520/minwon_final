@@ -33,3 +33,37 @@ creds = get_credentials()
 service = build('sheets', 'v4', credentials=creds)
 
 st.title("📌 민원 접수 시스템")
+
+# 구글 시트 연동 함수
+def append_to_sheet(spreadsheet_id, _values):
+    try:
+        body = {"values": _values}
+        result = (
+            service.spreadsheets()
+            .values()
+            .append(
+                spreadsheetId=spreadsheet_id,
+                range="Sheet1!A1",
+                valueInputOption="USER_ENTERED",
+                insertDataOption="INSERT_ROWS",
+                body=body,
+            )
+            .execute()
+        )
+        return result
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+        return error
+
+def read_sheet(spreadsheet_id):
+    try:
+        result = (
+            service.spreadsheets()
+            .values()
+            .get(spreadsheetId=spreadsheet_id, range="Sheet1!A2:E")
+            .execute()
+        )
+        return result.get("values", [])
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+        return []
