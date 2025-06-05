@@ -67,3 +67,33 @@ def read_sheet(spreadsheet_id):
     except HttpError as error:
         print(f"An error occurred: {error}")
         return []
+    
+    st.subheader("지도에서 민원 위치 선택")
+
+# 지도 표시 및 클릭 처리
+yonsei_center = [37.565784, 126.938572]  # 연세대학교 중심 좌표
+m = folium.Map(location=yonsei_center, zoom_start=16)
+m.add_child(folium.LatLngPopup())
+
+# 이미 등록된 민원 마커 추가
+existing_data = read_sheet(SPREADSHEET_ID)
+for row in existing_data:
+    try:
+        content, latlon, author, date_str = row
+        lat, lon = map(float, latlon.split(","))
+        folium.Marker(
+            location=[lat, lon],
+            popup=f"{date_str} | {author}: {content}",
+            icon=folium.Icon(color="red", icon="info-sign")
+        ).add_to(m)
+    except Exception as e:
+        print("Marker Error:", e)
+
+map_data = st_folium(m, width=700, height=500)
+
+if map_data and map_data.get("last_clicked"):
+    lat = map_data["last_clicked"]["lat"]
+    lon = map_data["last_clicked"]["lng"]
+    st.session_state["selected_lat"] = lat
+    st.session_state["selected_lon"] = lon
+    st.success(f"선택된 위치는 위도 {lat:.6f}, 경도 {lon:.6f} 입니다. 밑에서 이어서 민원을 작성해주세요!")
