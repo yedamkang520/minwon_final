@@ -97,3 +97,15 @@ if map_data and map_data.get("last_clicked"):
     st.session_state["selected_lat"] = lat
     st.session_state["selected_lon"] = lon
     st.success(f"선택된 위치는 위도 {lat:.6f}, 경도 {lon:.6f} 입니다. 밑에서 이어서 민원을 작성해주세요!")
+
+# 민원 클래스
+class CivilComplaint:
+    def __init__(self, author, content, lat, lon, date):
+        self.author = author
+        self.content = content
+        self.lat = lat
+        self.lon = lon
+        self.date = date
+
+    def __str__(self):
+        return f"{self.date} | {self.author} | {self.content} | 좌표: ({self.lat}, {self.lon})"
