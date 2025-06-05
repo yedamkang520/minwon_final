@@ -127,3 +127,28 @@ if st.button("민원 제출"):
         append_to_sheet(SPREADSHEET_ID, [[content, f"{lat},{lon}", author, created_at.isoformat()]])
     else:
         st.error("모든 항목을 입력해주세요.")
+
+# 민원 조회
+st.subheader("민원 목록 조회")
+data = read_sheet(SPREADSHEET_ID)
+
+if data:
+    st.write("민원 개수:", len(data))
+    st.write("최근 민원:")
+    for row in data[-5:][::-1]:
+        try:
+            content, latlon, author, date = row
+            lat, lon = map(float, latlon.split(","))
+            st.text(f"{date} | {author}: {content} @ ({lat}, {lon})")
+        except:
+            continue
+
+    st.subheader("작성자 민원 조회")
+    target_author = st.text_input("작성자 이름으로 검색")
+    if st.button("조회"):
+        filtered = [r for r in data if len(r) >= 4 and r[2] == target_author]
+        if filtered:
+            for r in filtered:
+                st.text(f"{r[3]} | {r[2]}: {r[0]}")
+        else:
+            st.write("해당 작성자의 민원이 없습니다.")
