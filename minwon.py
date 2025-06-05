@@ -109,3 +109,21 @@ class CivilComplaint:
 
     def __str__(self):
         return f"{self.date} | {self.author} | {self.content} | 좌표: ({self.lat}, {self.lon})"
+    
+st.subheader("민원 접수")
+
+lat = st.number_input("위도 입력", format="%.6f", value=st.session_state.get("selected_lat", 0.0))
+lon = st.number_input("경도 입력", format="%.6f", value=st.session_state.get("selected_lon", 0.0))
+author = st.text_input("작성자")
+content = st.text_area("민원 내용")
+created_at = st.date_input("작성 날짜", value=date.today())
+created_at_str = created_at.isoformat()
+
+if st.button("민원 제출"):
+    if author and content and lat and lon and created_at:
+        complaint = CivilComplaint(author, content, lat, lon, created_at)
+        st.success("민원이 저장되었습니다!")
+        st.write("입력한 민원:", str(complaint))
+        append_to_sheet(SPREADSHEET_ID, [[content, f"{lat},{lon}", author, created_at.isoformat()]])
+    else:
+        st.error("모든 항목을 입력해주세요.")
