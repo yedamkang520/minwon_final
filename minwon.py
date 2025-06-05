@@ -152,3 +152,15 @@ if data:
                 st.text(f"{r[3]} | {r[2]}: {r[0]}")
         else:
             st.write("해당 작성자의 민원이 없습니다.")
+
+    date_counts = {}
+    for row in data:
+        if len(row) >= 4:
+            d = row[3]
+            date_counts[d] = date_counts.get(d, 0) + 1
+
+    if date_counts:
+        st.subheader("📈 날짜별 민원 수")
+        st.bar_chart(date_counts)
+else:
+    st.write("아직 등록된 민원이 없습니다.")
